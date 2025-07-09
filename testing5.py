@@ -1,10 +1,6 @@
 import tkinter as tk
-from tkinter import messagebox
 from PIL import Image, ImageTk
 import pickle
-import os 
-
-
 class User:
     def __init__(self, username, password, age):
         self.username = username
@@ -66,14 +62,12 @@ class SocialMediaApp:
         try:
             with open(filename, "rb") as file:
                 data = pickle.load(file)
-            # Update users to have the friend_requests and liked_posts attribute if missing
             if filename == "users.pkl":
                 for user in data:
                     if not hasattr(user, "friend_requests"):
                         user.friend_requests = []
                     if not hasattr(user, "liked_posts"):
                         user.liked_posts = set()
-            # Update posts to have the likes and liked_by attributes if missing
             if filename == "posts.pkl":
                 for post in data:
                     if not hasattr(post, "likes"):
@@ -126,10 +120,10 @@ class SocialMediaApp:
             for user in self.users:
                 if user.username == username and user.password == password:
                     self.current_user = user
-                    messagebox.showinfo("Success", f"Welcome, {user.username}!")
+                    tk.messagebox.showinfo("Success", f"Welcome, {user.username}!")
                     self.dashboard()
                     return
-            messagebox.showerror("Error", "Invalid username or password!")
+            tk.messagebox.showerror("Error", "Invalid username or password!")
 
         tk.Button(
             self.main_frame,
@@ -179,19 +173,19 @@ class SocialMediaApp:
             age = age_entry.get()
             #checking for username or pw left blank or age is something else other than numbers through isdigit() 
             if not username or not password or not age.isdigit():
-                messagebox.showerror("Error", "Invalid input!")
+                tk.messagebox.showerror("Error", "Invalid input!")
                 return
 
             for user in self.users:
                 if user.username == username:
-                    messagebox.showerror("Error", "Username already exists!")
+                    tk.messagebox.showerror("Error", "Username already exists!")
                     return
 
             new_user = User(username, password, age)
 
             self.users.append(new_user)
             self.save_data("users.pkl", self.users)
-            messagebox.showinfo("Success", "Registration successful!")
+            tk.messagebox.showinfo("Success", "Registration successful!")
             self.login_screen()
 
         tk.Button(
@@ -315,10 +309,10 @@ class SocialMediaApp:
                             user.add_notification(f"New post by {self.current_user.username}: {content}")
                             break
                 self.save_data("users.pkl", self.users)
-                messagebox.showinfo("Success", "Post created successfully!")
+                tk.messagebox.showinfo("Success", "Post created successfully!")
                 self.dashboard()
             else:
-                messagebox.showerror("Error", "Post content cannot be empty!")
+                tk.messagebox.showerror("Error", "Post content cannot be empty!")
 
         tk.Button(
             self.main_frame,
@@ -379,7 +373,7 @@ class SocialMediaApp:
 
                 def like_post(post=post):
                     if post in self.current_user.liked_posts:
-                        messagebox.showerror("Error", "You have already liked this post!")
+                        tk.messagebox.showerror("Error", "You have already liked this post!")
                         return
                     post.likes+=1
                     post.liked_by.add(self.current_user.username)
@@ -390,7 +384,7 @@ class SocialMediaApp:
                             user.add_notification(f"{self.current_user.username} liked your post.")
                             self.save_data("users.pkl", self.users)
                             break
-                    messagebox.showinfo("Success", "You liked the post!")
+                    tk.messagebox.showinfo("Success", "You liked the post!")
                     self.view_posts_screen()
 
                 tk.Button(
@@ -419,11 +413,11 @@ class SocialMediaApp:
                                     user.add_notification(f"{self.current_user.username} commented on your post.")
                                     self.save_data("users.pkl", self.users)
                                     break
-                            messagebox.showinfo("Success", "Comment added!")
+                            tk.messagebox.showinfo("Success", "Comment added!")
                             comment_window.destroy()
                             self.view_posts_screen()
                         else:
-                            messagebox.showerror("Error", "Comment cannot be empty!")
+                            tk.messagebox.showerror("Error", "Comment cannot be empty!")
                     tk.Button(comment_window, text="Submit", command=submit_comment, bg="#3498DB", fg="white", font=("Arial", 10)).pack(pady=5)
 
                 tk.Button(
@@ -462,7 +456,7 @@ class SocialMediaApp:
     def delete_post(self, post):
         self.posts.remove(post)
         self.save_data("posts.pkl", self.posts)
-        messagebox.showinfo("Success", "Post deleted successfully!")
+        tk.messagebox.showinfo("Success", "Post deleted successfully!")
         self.view_posts_screen()
 
     def friend_requests_screen(self):
@@ -536,18 +530,18 @@ class SocialMediaApp:
 
             if recipient:
                 if recipient.username == self.current_user.username:
-                    messagebox.showerror("Error", "You cannot send a friend request to yourself!")
+                    tk.messagebox.showerror("Error", "You cannot send a friend request to yourself!")
                 elif recipient_username in self.current_user.friends:
-                    messagebox.showerror("Error", "This user is already your friend!")
+                    tk.messagebox.showerror("Error", "This user is already your friend!")
                 elif recipient_username in self.current_user.friend_requests:
-                    messagebox.showerror("Error", "Friend request already sent!")
+                    tk.messagebox.showerror("Error", "Friend request already sent!")
                 else:
                     recipient.add_friend_request(self.current_user.username)
                     self.save_data("users.pkl", self.users)
-                    messagebox.showinfo("Success", f"Friend request sent to {recipient_username}!")
+                    tk.messagebox.showinfo("Success", f"Friend request sent to {recipient_username}!")
                     self.dashboard()
             else:
-                messagebox.showerror("Error", "User not found!")
+                tk.messagebox.showerror("Error", "User not found!")
 
         tk.Button(
             self.main_frame,
@@ -578,14 +572,14 @@ class SocialMediaApp:
                     user.friends.append(self.current_user.username)
                 break
         self.save_data("users.pkl", self.users)
-        messagebox.showinfo("Success", f"You are now friends with {sender}!")
+        tk.messagebox.showinfo("Success", f"You are now friends with {sender}!")
         self.friend_requests_screen()
 
     def reject_friend_request(self, sender):
         if sender in self.current_user.friend_requests:
             self.current_user.friend_requests.remove(sender)
         self.save_data("users.pkl", self.users)
-        messagebox.showinfo("Info", f"Friend request from {sender} rejected!")
+        tk.messagebox.showinfo("Info", f"Friend request from {sender} rejected!")
         self.friend_requests_screen()
 
     def notifications_screen(self):
@@ -665,7 +659,7 @@ class SocialMediaApp:
                 user.friends.remove(self.current_user.username)
                 break
         self.save_data("users.pkl", self.users)
-        messagebox.showinfo("Success", f"{friend} removed from your friend list!")
+        tk.messagebox.showinfo("Success", f"{friend} removed from your friend list!")
         self.friend_list_screen()
 
     def logout(self):

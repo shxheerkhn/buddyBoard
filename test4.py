@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 import os
 import pickle
-import datetime
 
 class User:
     def __init__(self, username, password, age):
@@ -23,7 +22,6 @@ class Post:
         self.content = content
         self.author = author
         self.tags = tags
-        self.timestamp = datetime.datetime.now()
         self.comments = []
 
     def add_comment(self, comment):
@@ -263,7 +261,7 @@ class SocialMediaApp:
             return
 
         for post in self.posts:
-            post_text = f"Author: {post.author}\nTags: {', '.join(post.tags)}\nDate: {post.timestamp}\n\n{post.content}\n{'-'*40}\n"
+            post_text = f"Author: {post.author}\nTags: {', '.join(post.tags)}\n{post.content}\n{'-'*40}\n"
             tk.Label(self.main_frame, text=post_text, bg="#D6EAF8", anchor="w", justify="left").pack(pady=5)
 
         tk.Button(
